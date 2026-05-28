@@ -28,38 +28,34 @@ type Bot struct {
 // 	bots map[string]Bot
 // }
 
-func (b *Bot) connectBot(w http.ResponseWriter, r *http.Request) {
+func connectBot(w http.ResponseWriter, r *http.Request) {
+	b := Bot{}
 	var con *websocket.Conn
 	var err error
-
 	if con, err = websocket.Accept(w, r, nil); err != nil {
 		log.Println(err)
 		return
 	}
-
 	ctx := context.Background()
 	// read
-	go func() {
-		for {
-
-			if err := wsjson.Read(ctx, con, b); err != nil {
-				log.Println(err)
-				return
-
-			}
-			b.LastSeen = time.Now().Format("03:04:05PM")
-			fmt.Print(b)
+	for {
+		if err := wsjson.Read(ctx, con, b); err != nil {
+			log.Println(err)
+			return
 		}
-	}()
+		b.LastSeen = time.Now().Format("03:04:05PM")
+		fmt.Print(b)
+	}
 
 	con.Close(websocket.StatusNormalClosure, "")
-
 }
 
-func (b *Bot) heartBeat() {}
+func heartBeat(con *websocket.Conn) {
+	//will do later
+}
 func main() {
-	b := Bot{}
-	http.HandleFunc("/connect", b.connectBot)
+
+	http.HandleFunc("/connect", connectBot)
 	http.ListenAndServe(":4444", nil)
 
 }
