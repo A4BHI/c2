@@ -15,7 +15,7 @@ type Bot struct {
 	ID       string `json:"id"`
 	OS       string `jsin:"os"`
 	IP       string `json:"ip"`
-	LastSeen string
+	LastSeen time.Time
 	Active   bool
 	// Command Command
 }
@@ -42,14 +42,14 @@ func connectBot(w http.ResponseWriter, r *http.Request) {
 
 	defer con.Close(websocket.StatusNormalClosure, "")
 	ctx := context.Background()
-	// read
+
 	go heartBeat(con, &b)
 	for {
 		if err := wsjson.Read(ctx, con, b); err != nil {
 			log.Println(err)
 			return
 		}
-		b.LastSeen = time.Now().Format("03:04:05PM")
+		b.LastSeen = time.Now()
 		b.Active = true
 		fmt.Print(b)
 	}
@@ -57,9 +57,27 @@ func connectBot(w http.ResponseWriter, r *http.Request) {
 }
 
 func heartBeat(con *websocket.Conn, bot *Bot) {
-	if bot.Active {
-		time.Sleep(1 * time.Minute)
+
+	timer := time.Tick(10 * time.Second)
+	inactiveSince := time.Now()
+	for range timer {
+		if !bot.Active {
+			if time.Since(inactiveSince) > 15*time.Second {
+				fmt.Println("Closing now...")
+				con.CloseNow()
+				return
+			}
+			continue
+		}
+
+		if time.Since(bot.LastSeen) > 1*time.Minute {
+			fmt.Println("Closing now..")
+			con.CloseNow()
+			return
+		}
+
 	}
+
 }
 func main() {
 
