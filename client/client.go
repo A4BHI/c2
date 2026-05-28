@@ -16,7 +16,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	c, _, err := websocket.Dial(ctx, "ws://a4sys.in:8080/api", nil)
+	c, _, err := websocket.Dial(ctx, "ws://localhost:8080/api", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

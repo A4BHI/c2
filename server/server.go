@@ -47,46 +47,19 @@ func (b *Bot) connectBot(w http.ResponseWriter, r *http.Request) {
 				return
 
 			}
-
 			b.LastSeen = time.Now().Format("03:04:05PM")
-
+			fmt.Print(b)
 		}
 	}()
+
+	con.Close(websocket.StatusNormalClosure, "")
 
 }
 
 func (b *Bot) heartBeat() {}
 func main() {
-
-	http.HandleFunc("/api", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c, err := websocket.Accept(w, r, nil)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer c.CloseNow()
-
-		ctx := context.Background()
-
-		fmt.Println("test")
-		for {
-			var v string
-			err = wsjson.Read(ctx, c, &v)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			log.Printf("received: %v", v)
-
-			wsjson.Write(ctx, c, "Hey nigga")
-
-			if v == "close" {
-				break
-			}
-		}
-
-		// c.Close(websocket.StatusNormalClosure, "")
-	}))
-
-	http.ListenAndServe("a4sys.in:8080", nil)
+	b := Bot{}
+	http.HandleFunc("/connect", b.connectBot)
+	http.ListenAndServe(":4444", nil)
 
 }
