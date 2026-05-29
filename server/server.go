@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/coder/websocket"
@@ -12,8 +13,10 @@ import (
 )
 
 type Bot struct {
+	mu sync.RWMutex
+
 	ID       string `json:"id"`
-	OS       string `jsin:"os"`
+	OS       string `json:"os"`
 	IP       string `json:"ip"`
 	LastSeen time.Time
 	Active   bool
@@ -45,13 +48,15 @@ func connectBot(w http.ResponseWriter, r *http.Request) {
 
 	go heartBeat(con, &b)
 	for {
-		if err := wsjson.Read(ctx, con, b); err != nil {
+		if err := wsjson.Read(ctx, con, &b); err != nil {
 			log.Println(err)
 			return
 		}
+		b.mu.Lock()
 		b.LastSeen = time.Now()
 		b.Active = true
-		fmt.Print(b)
+		b.mu.Unlock()
+		fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
 	}
 
 }
@@ -60,8 +65,13 @@ func heartBeat(con *websocket.Conn, bot *Bot) {
 
 	timer := time.Tick(10 * time.Second)
 	inactiveSince := time.Now()
+
 	for range timer {
-		if !bot.Active {
+		bot.mu.Lock()
+		lastseen := bot.LastSeen
+		active := bot.Active
+		bot.mu.Unlock()
+		if !active {
 			if time.Since(inactiveSince) > 15*time.Second {
 				fmt.Println("Closing now...")
 				con.CloseNow()
@@ -70,7 +80,7 @@ func heartBeat(con *websocket.Conn, bot *Bot) {
 			continue
 		}
 
-		if time.Since(bot.LastSeen) > 1*time.Minute {
+		if time.Since(lastseen) > 1*time.Minute {
 			fmt.Println("Closing now..")
 			con.CloseNow()
 			return
