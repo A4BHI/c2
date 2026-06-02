@@ -27,6 +27,13 @@ type Bot struct {
 	// Command Command
 }
 
+func (b *Bot) updateLastseen() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	b.LastSeen = time.Now()
+}
+
 type Command struct {
 	BotID int    `json:"id"`
 	Cmd   string `json:"cmd"`
@@ -56,8 +63,8 @@ func (c *c2) registerBot(id int, b *Bot) {
 }
 
 func (c *c2) getBot(id int) *Bot {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	return c.bots[id]
 
 }
@@ -97,11 +104,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 		switch b.BotMessage.Type {
 		case "heartbeat":
-			b.mu.Lock()
-			b.LastSeen = time.Now()
-			b.mu.Unlock()
+			b.updateLastseen()
 		case "whoami":
 			fmt.Println("CMD: ", b.BotMessage.Type, " Result: ", b.BotMessage.Message)
+			b.updateLastseen()
 
 		}
 
@@ -166,7 +172,6 @@ func main() {
 	botMux := http.NewServeMux()
 	botMux.HandleFunc("/connect", c2.connectBot)
 
-	// http.HandleFunc("/executeCommand", c2.SendCommand)
 	go func() {
 		defer wg.Done()
 		if err := http.ListenAndServe("127.0.0.1:9000", adminMux); err != nil {
