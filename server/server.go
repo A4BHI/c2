@@ -162,8 +162,13 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 
 } //send  execute command  message by admin
 func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
-
+	//todo
 }
+
+func (c *c2) DisconnectBot(w http.ResponseWriter, r *http.Request) {
+	//todo
+}
+
 func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
