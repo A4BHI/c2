@@ -95,6 +95,9 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 } //send  execute command  message by admin
 func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	err := json.NewEncoder(w).Encode(c.bots)
 	if err != nil {
 		log.Println("Error sending list of bots : ", err)
