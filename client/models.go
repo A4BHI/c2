@@ -1,14 +1,43 @@
 package main
 
+import (
+	"os"
+	"runtime"
+
+	"github.com/denisbrodbeck/machineid"
+)
+
 type Bot struct {
-	ID int    `json:"id"`
-	OS string `json:"os"`
+	ID       string `json:"id"`
+	OS       string `json:"os"`
 	HostName string `json:"hostname"`
 }
 
-func getSysInfo() *Bot {
+type Error struct {
+	botid string
+	err   error
+}
 
+func getMachineID() string {
+	secretkey := "niggastfu"
+	id, err := machineid.ProtectedID(secretkey)
+	if err != nil {
+
+		return ""
+	}
+
+	return id
+
+}
+
+func getSysInfo() *Bot {
+	hostname, err := os.Hostname()
+	if err != nil {
+		// log.Println("Cannot get hostname: ", err)
+	}
 	return &Bot{
-		ID: ,
+		ID:       getMachineID(),
+		OS:       runtime.GOOS,
+		HostName: hostname,
 	}
 }
