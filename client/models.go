@@ -1,11 +1,14 @@
 package main
 
 type Bot struct {
-	ID int    `json:"ip"`
-	IP string `json:"IP"`
-	OS string `json:"OS"`
+	ID int    `json:"id"`
+	OS string `json:"os"`
+	HostName string `json:"hostname"`
 }
 
 func getSysInfo() *Bot {
 
+	return &Bot{
+		ID: ,
+	}
 }
