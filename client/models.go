@@ -5,3 +5,7 @@ type Bot struct {
 	IP string `json:"IP"`
 	OS string `json:"OS"`
 }
+
+func getSysInfo() *Bot {
+
+}
