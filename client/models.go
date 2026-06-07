@@ -14,8 +14,8 @@ type Bot struct {
 }
 
 type Error struct {
-	botid string
-	err   error
+	BOTID string
+	ERR   error
 }
 
 func getMachineID() string {

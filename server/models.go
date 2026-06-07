@@ -10,7 +10,7 @@ import (
 type Bot struct {
 	mu sync.RWMutex
 
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	OS       string `json:"os"`
 	HostName string `json:"hostname"`
 	LastSeen time.Time
