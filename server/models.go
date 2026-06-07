@@ -27,7 +27,7 @@ func (b *Bot) updateLastseen() {
 }
 
 type Command struct {
-	BotID   int    `json:"id"`
+	BotID   string `json:"id"`
 	CmdType string `json:"cmdtype"`
 	Payload string `json:"payload"`
 }

