@@ -41,7 +41,7 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	c.registerBot(b.ID, &b)
 	b.mu.Unlock()
 
-	fmt.Print(b.ID, b.HostName, b.OS, b.LastSeen)
+	fmt.Print("BOT ID: ", b.ID, "\nHOSTNAME: ", b.HostName, "\n OS: ", b.OS, "\nLASTSEEN: ", b.LastSeen, "\n")
 
 	go c.listentoBot(&b)
 

@@ -40,11 +40,6 @@ func main() {
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
 	adminMux.HandleFunc("/disconnect/{botid}/", func(w http.ResponseWriter, r *http.Request) {
-		// botID, err := strconv.Atoi(r.PathValue("botid"))
-		// if err != nil {
-		// 	log.Println("Error converting botid type string to int", err)
-		// 	return
-		// }
 		botID := r.PathValue("botid")
 
 		if exist := c2.DisconnectBot(botID); !exist {
