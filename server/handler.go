@@ -138,6 +138,7 @@ func (c *c2) DisconnectBot(botID string) bool {
 	bot.mu.Unlock()
 	c.mu.Lock()
 	delete(c.bots, botID)
+	fmt.Println(c.bots)
 	c.mu.Unlock()
 
 	return exist

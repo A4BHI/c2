@@ -13,6 +13,11 @@ type Bot struct {
 	HostName string `json:"hostname"`
 }
 
+type ServerMessage struct {
+	Type    string `json:"type"`
+	Message string `json:"message"`
+}
+
 type Error struct {
 	BOTID string
 	ERR   error

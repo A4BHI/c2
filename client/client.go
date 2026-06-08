@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"sync"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 )
+
+var wg sync.WaitGroup
 
 type c2 struct {
 	con *websocket.Conn
@@ -25,13 +28,19 @@ func (c *c2) connectToserver() {
 	wsjson.Write(c.ctx, c.con, bot)
 
 	go c.heartbeat()
+	wg.Add(1)
 	go c.listenToserver()
 }
 
 func (c *c2) listenToserver() {
-	for {
 
-		wsjson.Read(c.ctx, c.con, nil)
+	defer wg.Done()
+	var msg ServerMessage
+	for {
+		err := wsjson.Read(c.ctx, c.con, &msg)
+		if err != nil {
+			return
+		}
 	}
 }
 
@@ -42,4 +51,5 @@ func (c *c2) heartbeat() {
 func main() {
 	c := c2{}
 	c.connectToserver()
+	wg.Wait()
 }
