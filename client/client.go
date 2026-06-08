@@ -16,10 +16,15 @@ type c2 struct {
 
 func (c c2) connectToserver() {
 	ctx := context.Background()
-	c.con, _, err := websocket.Dial(ctx, "ws://localhost:8080/connect", nil)
+	var err error
+	c.con, _, err = websocket.Dial(ctx, "ws://localhost:8080/connect", nil)
 	if err != nil {
-
+		return
 	}
+}
+
+func (c c2) listenToserver() {
+
 }
 
 func main() {
