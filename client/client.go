@@ -12,6 +12,14 @@ import (
 	"github.com/coder/websocket/wsjson"
 )
 
+type c2 struct {
+	con *websocket.Conn
+}
+
+func (c c2) connectToserver() {
+
+}
+
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
