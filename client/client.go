@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"os"
-	"time"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
@@ -17,18 +15,15 @@ type c2 struct {
 }
 
 func (c c2) connectToserver() {
+	ctx := context.Background()
+	c.con, _, err := websocket.Dial(ctx, "ws://localhost:8080/connect", nil)
+	if err != nil {
 
+	}
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
 
-	c, _, err := websocket.Dial(ctx, "ws://localhost:8080/api", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer c.CloseNow()
 	var msg string
 	scanner := bufio.NewScanner(os.Stdin)
 
