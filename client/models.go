@@ -18,6 +18,11 @@ type MessageFromServer struct {
 	Message string `json:"message"`
 }
 
+type MessageToServer struct {
+	Type    string `json:"type"`
+	Message any    `json:"message"`
+}
+
 type Error struct {
 	BOTID string
 	ERR   error

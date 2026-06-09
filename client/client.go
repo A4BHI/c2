@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -53,7 +54,15 @@ func (c *c2) listenToserver() {
 func (c *c2) heartbeat() {
 	ticker := time.Tick(30 * time.Second)
 	for range ticker {
+		msg := MessageToServer{
+			Type:    "heartbeat",
+			Message: time.Now(),
+		}
 
+		if err := wsjson.Write(c.ctx, c.con, msg); err != nil {
+			return
+		}
+		fmt.Println("Heartbeat send")
 	}
 }
 
