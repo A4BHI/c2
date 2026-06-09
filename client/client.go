@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
@@ -35,7 +36,7 @@ func (c *c2) connectToserver() {
 func (c *c2) listenToserver() {
 
 	defer wg.Done()
-	var msg ServerMessage
+	var msg MessageFromServer
 	for {
 		err := wsjson.Read(c.ctx, c.con, &msg)
 		if err != nil {
@@ -50,7 +51,10 @@ func (c *c2) listenToserver() {
 }
 
 func (c *c2) heartbeat() {
+	ticker := time.Tick(30 * time.Second)
+	for range ticker {
 
+	}
 }
 
 func main() {

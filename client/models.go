@@ -13,7 +13,7 @@ type Bot struct {
 	HostName string `json:"hostname"`
 }
 
-type ServerMessage struct {
+type MessageFromServer struct {
 	Type    string `json:"type"`
 	Message string `json:"message"`
 }
