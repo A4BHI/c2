@@ -70,12 +70,16 @@ func (c *c2) listentoBot(bot *Bot) {
 
 		switch msg.Type {
 		case ERROR_MSG:
+			bot.mu.RLock()
 			fmt.Println("ERROR MESSAGE FROM BOT : ", bot.ID, "ERROR : ", msg.Message)
+			bot.mu.RUnlock()
 
 		case KEYLOGGER:
 
 		case HEARTBEAT:
+			bot.mu.Lock()
 			log.Println("Recieved Heartbeat From Bot : ", bot.ID)
+			bot.mu.RUnlock()
 		}
 
 	}
