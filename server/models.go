@@ -36,3 +36,8 @@ type BotMessage struct {
 	Type    string
 	Message any
 }
+
+type BotConfig struct {
+	ID        string
+	SecretKey string
+}

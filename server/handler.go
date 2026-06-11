@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
+	"github.com/google/uuid"
 )
 
 const (
@@ -156,10 +158,18 @@ func GenerateBot(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GenerateSecretKey() {
-	bytes := make([]byte, 32)
-	if _, err := io.ReadFull(rand.Reader, bytes); err != nil {
+func GenerateSecretKey() BotConfig {
+	buf := make([]byte, 32)
+	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
 		log.Println(err)
 		return
 	}
+	secretkey := hex.EncodeToString(buf)
+	id := uuid.NewString()
+
+	return BotConfig{
+		ID:        id,
+		SecretKey: secretkey,
+	}
+
 }
