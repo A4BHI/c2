@@ -150,3 +150,7 @@ func (c *c2) DisconnectBot(botID string) bool {
 
 	return exist
 }
+
+func GenerateBot(w http.ResponseWriter, r *http.Request) {
+
+}
