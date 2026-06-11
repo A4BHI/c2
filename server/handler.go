@@ -183,3 +183,5 @@ func GenerateBotCredentials() (BotCreds, error) {
 func SaveToDB(BotCreds) {
 
 }
+
+func CreateChallenge() string { return "" }

