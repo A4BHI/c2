@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/ecdh"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -158,5 +159,8 @@ func GenerateBot(w http.ResponseWriter, r *http.Request) {
 
 func GenerateSecretKey() {
 	bytes := make([]byte, 32)
-	rand.Reader.Read(bytes)
+	if _ , err: = io.ReadFull(rand.Reader, bytes); err != nil{
+		log.Println(err)
+		return
+	}
 }
