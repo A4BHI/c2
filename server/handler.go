@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -153,4 +154,9 @@ func (c *c2) DisconnectBot(botID string) bool {
 
 func GenerateBot(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func GenerateSecretKey() {
+	bytes := make([]byte, 32)
+	rand.Reader.Read(bytes)
 }
