@@ -155,21 +155,31 @@ func (c *c2) DisconnectBot(botID string) bool {
 }
 
 func GenerateBot(w http.ResponseWriter, r *http.Request) {
+	botcreds, err := GenerateBotCredentials()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	SaveToDB(botcreds)
 
 }
 
-func GenerateSecretKey() BotConfig {
+func GenerateBotCredentials() (BotCreds, error) {
 	buf := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
-		log.Println(err)
-		return
+		return BotCreds{}, err
 	}
 	secretkey := hex.EncodeToString(buf)
 	id := uuid.NewString()
 
-	return BotConfig{
+	return BotCreds{
 		ID:        id,
 		SecretKey: secretkey,
-	}
+	}, nil
+
+}
+
+func SaveToDB(BotCreds) {
 
 }
