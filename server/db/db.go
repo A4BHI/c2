@@ -4,15 +4,25 @@ import (
 	"c2/server/models"
 	"database/sql"
 	"log"
+
+	_ "github.com/glebarez/go-sqlite"
 )
 
-func StartDB() {
+type Db struct {
+	DB *sql.DB
+}
+
+func NewDbConnection() *Db {
+
 	db, err := sql.Open("sqlite", "bot.db")
 	if err != nil {
 		log.Println("Database connection error : ", err)
-		return
+		return nil
 	}
 
+	return &Db{
+		DB: db,
+	}
 }
 
 func SaveToDB(models.BotCreds) {
