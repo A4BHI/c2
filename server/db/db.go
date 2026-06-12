@@ -9,7 +9,7 @@ import (
 )
 
 type Db struct {
-	DB *sql.DB
+	Conn *sql.DB
 }
 
 func NewDbConnection() *Db {
@@ -20,7 +20,7 @@ func NewDbConnection() *Db {
 		return nil
 	}
 	return &Db{
-		DB: db,
+		Conn: db,
 	}
 }
 func (db *Db) CreateTable() error {
@@ -29,7 +29,7 @@ func (db *Db) CreateTable() error {
 						registration_key TEXT NOT NULL
 			  )`
 
-	if _, err := db.DB.Exec(query); err != nil {
+	if _, err := db.Conn.Exec(query); err != nil {
 		return err
 	}
 
