@@ -19,22 +19,23 @@ func NewDbConnection() *Db {
 		log.Println("Database connection error : ", err)
 		return nil
 	}
-
+	return &Db{
+		DB: db,
+	}
+}
+func (db *Db) CreateTable() error {
 	query := `CREATE TABLE IF NOT EXISTS BotCreds(
 						id TEXT PRIMARY KEY,
 						registration_key TEXT NOT NULL
 			  )`
 
-	if _, err = db.Exec(query); err != nil {
-		log.Println("Failed to execute query : ", err)
-		return nil
+	if _, err := db.DB.Exec(query); err != nil {
+		return err
 	}
 
-	return &Db{
-		DB: db,
-	}
+	return nil
 }
 
-func SaveToDB(models.BotCreds) {
+func (db *Db) SaveToDB(models.BotCreds) {
 
 }

