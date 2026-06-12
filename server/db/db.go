@@ -20,6 +20,16 @@ func NewDbConnection() *Db {
 		return nil
 	}
 
+	query := `CREATE TABLE IF NOT EXISTS BotCreds(
+						id TEXT PRIMARY KEY,
+						registration_key TEXT NOT NULL
+			  )`
+
+	if _, err = db.Exec(query); err != nil {
+		log.Println("Failed to execute query : ", err)
+		return nil
+	}
+
 	return &Db{
 		DB: db,
 	}
