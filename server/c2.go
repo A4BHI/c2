@@ -1,33 +1,34 @@
 package main
 
 import (
+	"c2/server/models"
 	"log"
 	"net/http"
 	"sync"
 )
 
 type c2 struct {
-	mu   sync.RWMutex
-	bots map[string]*Bot
+	Mu   sync.RWMutex
+	Bots map[string]*models.Bot
 }
 
 func Newc2() *c2 {
 	return &c2{
-		bots: make(map[string]*Bot),
+		Bots: make(map[string]*models.Bot),
 	}
 }
 
-func (c *c2) registerBot(id string, b *Bot) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+func (c *c2) RegisterBot(id string, b *models.Bot) {
+	c.Mu.Lock()
+	defer c.Mu.Unlock()
 
-	c.bots[id] = b
+	c.Bots[id] = b
 }
 
-func (c *c2) getBot(id string) *Bot {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-	return c.bots[id]
+func (c *c2) GetBot(id string) *models.Bot {
+	c.Mu.RLock()
+	defer c.Mu.RUnlock()
+	return c.Bots[id]
 
 }
 

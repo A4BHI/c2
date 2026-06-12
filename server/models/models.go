@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"sync"
@@ -8,20 +8,20 @@ import (
 )
 
 type Bot struct {
-	mu sync.RWMutex
+	Mu sync.RWMutex
 
 	ID       string `json:"id"`
 	OS       string `json:"os"`
 	HostName string `json:"hostname"`
 	LastSeen time.Time
 	Active   bool
-	con      *websocket.Conn
+	Con      *websocket.Conn
 	// Command Command
 }
 
-func (b *Bot) updateLastseen() {
-	b.mu.Lock()
-	defer b.mu.Unlock()
+func (b *Bot) UpdateLastseen() {
+	b.Mu.Lock()
+	defer b.Mu.Unlock()
 
 	b.LastSeen = time.Now()
 }
