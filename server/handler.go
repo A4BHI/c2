@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -185,3 +186,12 @@ func SaveToDB(BotCreds) {
 }
 
 func CreateChallenge() string { return "" }
+
+func StartDB() {
+	db, err := sql.Open("sqlite", "bot.db")
+	if err != nil {
+		log.Println("Database connection error : ", err)
+		return
+	}
+
+}
