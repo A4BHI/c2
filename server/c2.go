@@ -11,6 +11,7 @@ import (
 type c2 struct {
 	Mu   sync.RWMutex
 	Bots map[string]*models.Bot
+	Db   *database.Db
 }
 
 func Newc2() *c2 {
@@ -42,6 +43,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 	c2 := Newc2()
+	c2.Db = db
 
 	adminMux := http.NewServeMux()
 	adminMux.HandleFunc("/", nil)

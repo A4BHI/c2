@@ -153,11 +153,11 @@ func (c *c2) DisconnectBot(botID string) bool {
 	return exist
 }
 
-func GenerateBot(w http.ResponseWriter, r *http.Request) {
+func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 	botcreds, err := register.GenerateBotCredentials()
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
+	c.Db.SaveToDB(botcreds)
 }
