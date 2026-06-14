@@ -9,6 +9,11 @@ import (
 	"github.com/coder/websocket/wsjson"
 )
 
+var (
+	AgentID         = "agentid"
+	RegistrationKey = "Key"
+)
+
 var wg sync.WaitGroup
 
 type c2 struct {

