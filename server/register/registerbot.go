@@ -24,4 +24,8 @@ func GenerateBotCredentials() (models.BotCreds, error) {
 
 }
 
+func CompileBot(os string) {
+
+}
+
 func CreateChallenge() string { return "" }

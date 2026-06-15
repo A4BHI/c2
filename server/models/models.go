@@ -41,3 +41,9 @@ type BotCreds struct {
 	ID        string
 	SecretKey string
 }
+
+func (bc *BotCreds) CompileBot(os string) {
+	if os == "windows" {
+
+	}
+}
