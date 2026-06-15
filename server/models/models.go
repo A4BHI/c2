@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -37,13 +38,17 @@ type BotMessage struct {
 	Message any
 }
 
+type Ostype struct {
+	OS   string
+	Arch string
+}
+
 type BotCreds struct {
 	ID        string
 	SecretKey string
 }
 
-func (bc *BotCreds) CompileBot(os string) {
-	if os == "windows" {
+func (bc *BotCreds) CompileBot(ostype Ostype) {
+	ldflagsvalue := fmt.Sprintf("-X main.AgentID=%s -X 'main.Registration=%s'", bc.ID, bc.SecretKey)
 
-	}
 }
