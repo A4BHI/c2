@@ -39,7 +39,7 @@ type BotMessage struct {
 }
 
 type Ostype struct {
-	OS   string
+	Ext  string
 	Arch string
 }
 
