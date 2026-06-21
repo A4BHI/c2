@@ -39,8 +39,8 @@ type BotMessage struct {
 }
 
 type Ostype struct {
-	Ext  string
-	Arch string
+	Goos   string
+	Goarch string
 }
 
 type BotCreds struct {
