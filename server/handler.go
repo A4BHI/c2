@@ -169,6 +169,14 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(body, &rot)
 
+	switch rot.os {
+	case "windows":
+		switch rot.arch {
+		case "":
+		}
+	case "linux":
+	}
+
 	botcreds, err := register.GenerateBotCredentials()
 	if err != nil {
 		log.Println(err)
