@@ -188,7 +188,11 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	botcreds.CompileBot(ot)
+	out, err := botcreds.CompileBot(ot)
+	if err != nil {
+		log.Println("Compilation Failed: ", string(out))
+		return
+	}
 
 	c.Db.SaveToDB(botcreds)
 }
