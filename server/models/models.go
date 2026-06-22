@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"sync"
 	"time"
 
@@ -49,7 +51,11 @@ type BotCreds struct {
 	SecretKey string
 }
 
-func (bc *BotCreds) CompileBot(ostype Ostype) {
+func (bc *BotCreds) CompileBot(ostype Ostype) (out []byte, err error) {
 	ldflagsvalue := fmt.Sprintf("-X main.AgentID=%s -X 'main.Registration=%s'", bc.ID, bc.SecretKey)
+	cmd := exec.Command("go", "build", "-ldflags", ldflagsvalue, "-o", ostype.Output)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("GOOS=%s", ostype.Goos), fmt.Sprintf("GOARCH=%s", ostype.Goarch))
+	out, err = cmd.CombinedOutput()
+	return out, err
 
 }
