@@ -168,11 +168,12 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(body, &rot)
-
+	// ot := models.Ostype{}
 	switch rot.os {
 	case "windows":
 		switch rot.arch {
-		case "":
+		case "32":
+		case "64":
 		}
 	case "linux":
 	}
