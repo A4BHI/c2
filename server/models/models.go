@@ -41,6 +41,7 @@ type BotMessage struct {
 type Ostype struct {
 	Goos   string
 	Goarch string
+	Output string
 }
 
 type BotCreds struct {

