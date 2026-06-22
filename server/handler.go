@@ -154,33 +154,15 @@ func (c *c2) DisconnectBot(botID string) bool {
 }
 
 func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
-	type recieveostype struct {
-		os   string
-		arch string
-	}
-
-	rot := recieveostype{}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
-	json.Unmarshal(body, &rot)
 	ot := models.Ostype{}
-	switch rot.os {
-	case "windows":
-		ot.Goos = "windows"
-		ot.Output = "win.exe"
-		switch rot.arch {
-		case "32":
-			ot.Goarch = "386"
-		case "64":
-			ot.Goarch = "amd64"
-		}
-	case "linux":
-	}
+
+	json.Unmarshal(body, &ot)
 
 	botcreds, err := register.GenerateBotCredentials()
 	if err != nil {
