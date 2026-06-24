@@ -41,9 +41,9 @@ type BotMessage struct {
 }
 
 type Ostype struct {
-	Goos   string
-	Goarch string
-	Output string
+	Goos   string `json:"goos"`
+	Goarch string `json:"goarch"`
+	Output string `json:"output"`
 }
 
 type BotCreds struct {
@@ -55,6 +55,7 @@ func (bc *BotCreds) CompileBot(ostype Ostype) (out []byte, err error) {
 	ldflagsvalue := fmt.Sprintf("-X main.AgentID=%s -X 'main.Registration=%s'", bc.ID, bc.SecretKey)
 	cmd := exec.Command("go", "build", "-ldflags", ldflagsvalue, "-o", ostype.Output)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("GOOS=%s", ostype.Goos), fmt.Sprintf("GOARCH=%s", ostype.Goarch))
+	cmd.Dir = "/home/a4bhi/Desktop/c2/client"
 	out, err = cmd.CombinedOutput()
 	return out, err
 
