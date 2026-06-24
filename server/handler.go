@@ -178,5 +178,5 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// c.Db.SaveToDB(botcreds)
+	c.Db.SaveToDB(botcreds)
 }
