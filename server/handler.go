@@ -171,6 +171,10 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	if err := c.Db.SaveToDB(botcreds); err != nil {
+		log.Println("Failed to save botcreds in db : ", err)
+		return
+	}
 
 	out, err := botcreds.CompileBot(ot)
 	if err != nil {
@@ -178,5 +182,4 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Db.SaveToDB(botcreds)
 }
