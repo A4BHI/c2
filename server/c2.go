@@ -3,6 +3,7 @@ package main
 import (
 	database "c2/server/db"
 	"c2/server/models"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -35,6 +36,7 @@ func (c *c2) GetBot(id string) *models.Bot {
 }
 
 func main() {
+	fmt.Println("Started C2....")
 	db := database.NewDbConnection()
 	if err := db.CreateTable(); err != nil {
 		log.Fatal("Failed to execute query: ", err)

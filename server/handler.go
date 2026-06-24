@@ -155,6 +155,8 @@ func (c *c2) DisconnectBot(botID string) bool {
 
 func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 
+	log.Println("Generate Endpoint Hit")
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
