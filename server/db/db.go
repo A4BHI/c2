@@ -1,9 +1,7 @@
 package database
 
 import (
-	"c2/server/models"
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/glebarez/go-sqlite"
@@ -45,12 +43,12 @@ func (db *Db) CreateTable() error {
 // 	return nil
 // }
 
-func GenerateQuery(query string, args ...any) string {
-	return fmt.Sprintf(query, args...)
-}
+// func GenerateQuery(query string, args ...any) string {
+// 	return fmt.Sprintf(query, args...)
+// }
 
-func (db *Db) SavetoDB(bc models.BotCreds, query string) error {
-	if _, err := db.Conn.Exec(query); err != nil {
+func (db *Db) SavetoDB(query string, args ...any) error {
+	if _, err := db.Conn.Exec(query, args...); err != nil {
 		return err
 	}
 	return nil
