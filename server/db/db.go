@@ -36,9 +36,16 @@ func (db *Db) CreateTable() error {
 	return nil
 }
 
-func (db *Db) SaveToDB(bc models.BotCreds) error {
-	query := `INSERT INTO BotCreds (id,registration_key) VALUES(?,?)`
-	if _, err := db.Conn.Exec(query, bc.ID, bc.SecretKey); err != nil {
+// func (db *Db) SaveToDB(bc models.BotCreds) error {
+// 	query := `INSERT INTO BotCreds (id,registration_key) VALUES(?,?)`
+// 	if _, err := db.Conn.Exec(query, bc.ID, bc.SecretKey); err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+func (db *Db) SavetoDB(bc models.BotCreds, query string) error {
+	if _, err := db.Conn.Exec(query); err != nil {
 		return err
 	}
 	return nil
