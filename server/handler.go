@@ -1,7 +1,6 @@
 package main
 
 import (
-	database "c2/server/db"
 	"c2/server/models"
 	"c2/server/register"
 	"context"
@@ -172,7 +171,7 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	if err := c.Db.SavetoDB(botcreds, database.GenerateQuery("INSERT INTO BotCreds (id,registration_key) VALUES(%s,%s)", botcreds.ID, botcreds.SecretKey)); err != nil {
+	if err := c.Db.SavetoDB("INSERT INTO BotCreds (id,registration_key) VALUES(?,?)", botcreds.ID, botcreds.SecretKey); err != nil {
 		log.Println("Failed to save botcreds in db : ", err)
 		return
 	}
