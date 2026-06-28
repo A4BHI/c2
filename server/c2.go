@@ -10,15 +10,15 @@ import (
 	"sync"
 )
 
-type PendingConnections struct {
-	Conn []net.Conn
-	Db   *database.Db
+type PendingBots struct {
+	Conn net.Conn
 }
 
 type c2 struct {
-	Mu   sync.RWMutex
-	Bots map[string]*models.Bot
-	Db   *database.Db
+	Mu      sync.RWMutex
+	Bots    map[string]*models.Bot
+	Pending map[string]*PendingBots
+	Db      *database.Db
 }
 
 func Newc2() *c2 {
