@@ -22,6 +22,8 @@ const (
 	HEARTBEAT = "heartbeat"
 )
 
+// func (c *c2)
+
 func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	b := models.Bot{}
 

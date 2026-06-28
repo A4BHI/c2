@@ -5,9 +5,15 @@ import (
 	"c2/server/models"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 )
+
+type PendingConnections struct {
+	Conn []net.Conn
+	Db   *database.Db
+}
 
 type c2 struct {
 	Mu   sync.RWMutex
