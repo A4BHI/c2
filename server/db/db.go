@@ -41,3 +41,22 @@ func (db *Db) SavetoDB(query string, args ...any) error {
 	}
 	return nil
 }
+
+func (db *Db) SearchAgentID(id string) bool {
+	query := `SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM BotCreds
+        WHERE id = ?
+    )
+    THEN 1
+    ELSE 0
+END AS data_exists;`
+	var exists bool
+	err := db.Conn.QueryRow(query, id).Scan(&exists)
+	if err != nil {
+		return false
+	}
+
+	return true
+}

