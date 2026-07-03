@@ -185,3 +185,7 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (c *c2) RegisterBots(w http.ResponseWriter, r *http.Request) {
+
+}

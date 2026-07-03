@@ -41,7 +41,7 @@ func (c *c2) GetBot(id string) *models.Bot {
 
 }
 
-func (c *c2) RegisterBots() {
+func (c *c2) RegisterBots(w http.ResponseWriter, r *http.Request) {
 
 }
 
