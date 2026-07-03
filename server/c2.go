@@ -41,6 +41,10 @@ func (c *c2) GetBot(id string) *models.Bot {
 
 }
 
+func (c *c2) RegisterBots() {
+
+}
+
 func main() {
 	fmt.Println("Started C2....")
 	db := database.NewDbConnection()
