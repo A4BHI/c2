@@ -5,13 +5,14 @@ import (
 	"c2/server/models"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"sync"
+
+	"github.com/coder/websocket"
 )
 
 type PendingBots struct {
-	Conn net.Conn
+	Conn *websocket.Conn
 }
 
 type c2 struct {
@@ -38,10 +39,6 @@ func (c *c2) GetBot(id string) *models.Bot {
 	c.Mu.RLock()
 	defer c.Mu.RUnlock()
 	return c.Bots[id]
-
-}
-
-func (c *c2) RegisterBots(w http.ResponseWriter, r *http.Request) {
 
 }
 
