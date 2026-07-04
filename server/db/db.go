@@ -65,11 +65,16 @@ func GetFromDB[T any](db *Db, query string, args ...any) ([]T, error) {
 	var fetchedData []T
 	rows, err := db.Conn.Query(query, args...)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, nil
 	}
 	for rows.Next() {
-		rows.Scan(&fetchedData)
+		err = rows.Scan(&fetchedData)
+		if err != nil {
+			log.Println("Error fetching data [Data not found in DB]", err)
+			return nil, err
+
+		}
 	}
 
 	return fetchedData, nil
