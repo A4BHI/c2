@@ -50,6 +50,8 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// c.Db.
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()

@@ -61,6 +61,6 @@ END AS data_exists;`
 	return true
 }
 
-func (db *Db) GetFromDB(query string, args ...any) any {
+func GetFromDB[T any](query string, args ...any) (T, error) {
 
 }
