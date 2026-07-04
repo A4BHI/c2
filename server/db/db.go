@@ -60,3 +60,7 @@ END AS data_exists;`
 
 	return true
 }
+
+func (db *Db) GetFromDB(query string, args ...any) any {
+
+}

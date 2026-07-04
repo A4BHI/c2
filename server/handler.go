@@ -45,7 +45,9 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !c.Db.SearchAgentID(pb.Agentid) {
-
+		con.CloseNow()
+		log.Fatal("Closing a connection. [AgentID dosent exist in DB]")
+		return
 	}
 
 	b.Mu.Lock()
