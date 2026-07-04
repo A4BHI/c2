@@ -13,7 +13,7 @@ import (
 
 type PendingBots struct {
 	Conn       *websocket.Conn
-	Challenge  []byte
+	Challenge  string
 	Agentid    string
 	RegsterKey string
 }
