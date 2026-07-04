@@ -61,7 +61,16 @@ END AS data_exists;`
 	return true
 }
 
-func GetFromDB[T any](db *Db, query string, args ...any) (T, error) {
+func GetFromDB[T any](db *Db, query string, args ...any) ([]T, error) {
+	var fetchedData []T
+	rows, err := db.Conn.Query(query, args...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, nil
+	}
+	for rows.Next() {
+		rows.Scan(&fetchedData)
+	}
 
-	db.Conn.QueryRow(query, args...).Scan()
+	return fetchedData, nil
 }
