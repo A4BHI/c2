@@ -44,6 +44,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !c.Db.SearchAgentID(pb.Agentid) {
+
+	}
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()
