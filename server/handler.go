@@ -1,6 +1,7 @@
 package main
 
 import (
+	"c2/server/authentication"
 	database "c2/server/db"
 	"c2/server/models"
 	"c2/server/register"
@@ -55,6 +56,12 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error fetching RegisterKey from DB for AgentID %s : %v ", pb.Agentid, err)
 		con.CloseNow()
+		return
+	}
+
+	pb.Challenge, err = authentication.CreateChallenge()
+	if err != nil {
+		log.Printf("Failed to generate challenge for AgentID %s : %v ", pb.Agentid, err)
 		return
 	}
 
