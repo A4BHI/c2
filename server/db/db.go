@@ -61,6 +61,7 @@ END AS data_exists;`
 	return true
 }
 
-func GetFromDB[T any](query string, args ...any) (T, error) {
+func GetFromDB[T any](db *Db, query string, args ...any) (T, error) {
 
+	db.Conn.QueryRow(query, args...).Scan()
 }
