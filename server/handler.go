@@ -94,6 +94,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 
+	if authentication.CheckChallenge(pb.RegsterKey, pb.Challenge, msg.Message.(string)) {
+
+	}
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()
