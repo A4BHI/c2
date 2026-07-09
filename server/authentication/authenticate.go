@@ -18,7 +18,7 @@ func CreateChallenge() (string, error) {
 	return hex.EncodeToString(challengeBytes), err
 }
 
-func CheckChallenge(registerkey string, challenge string, botresponse string) {
+func CheckChallenge(registerkey string, challenge string, botresponse string) bool {
 
 	h := sha256.New()
 	h.Write([]byte(registerkey))
@@ -30,6 +30,9 @@ func CheckChallenge(registerkey string, challenge string, botresponse string) {
 
 	if hashHex == botresponse {
 
+		return true
 	}
+
+	return false
 
 }
