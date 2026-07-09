@@ -16,3 +16,7 @@ func CreateChallenge() (string, error) {
 
 	return hex.EncodeToString(challengeBytes), err
 }
+
+func CheckChallenge(registerkey string, challenge string, botresponse string) {
+
+}
