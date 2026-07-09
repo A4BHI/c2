@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"log"
 )
@@ -18,5 +19,17 @@ func CreateChallenge() (string, error) {
 }
 
 func CheckChallenge(registerkey string, challenge string, botresponse string) {
+
+	h := sha256.New()
+	h.Write([]byte(registerkey))
+	h.Write([]byte(challenge))
+
+	hash := h.Sum(nil)
+
+	hashHex := hex.EncodeToString(hash)
+
+	if hashHex == botresponse {
+
+	}
 
 }
