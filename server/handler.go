@@ -6,7 +6,6 @@ import (
 	"c2/server/models"
 	"c2/server/register"
 	"context"
-	"crypto/ecdh"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -95,8 +94,10 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 
-	if authentication.CheckChallenge(pb.RegsterKey, pb.Challenge, msg.Message.(string)) {
-		curve := ecdh.X25519()
+	if !authentication.CheckChallenge(pb.RegsterKey, pb.Challenge, msg.Message.(string)) {
+		log.Println("Authentication Failed for AGENT : ", pb.Agentid)
+		con.CloseNow()
+		return
 	}
 
 	b.Mu.Lock()
