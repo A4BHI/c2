@@ -100,24 +100,19 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.Bots[]
-
 	for {
-		ctx , cancel := context.WithTimeout(context.Background(),2*time.Minute)
-		err := wsjson.Read(ctx,con,msg)
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		err := wsjson.Read(ctx, con, msg)
 		cancel()
-		if err != nil{
-			log.Println("Error reading session from the agent: ",err)
+		if err != nil {
+			log.Println("Error reading session from the agent: ", err)
 			return
 		}
 
-		if msg.Type=="Session"{
+		if msg.Type == "registerbot" {
 
 		}
 	}
-
-
-
 
 	b.Mu.Lock()
 	b.Con = con
