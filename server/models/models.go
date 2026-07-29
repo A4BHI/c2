@@ -13,12 +13,13 @@ import (
 type Bot struct {
 	Mu sync.RWMutex
 
-	ID       string `json:"id"`
-	OS       string `json:"os"`
-	HostName string `json:"hostname"`
-	LastSeen time.Time
-	Active   bool
-	Con      *websocket.Conn
+	ID         string `json:"id"`
+	OS         string `json:"os"`
+	HostName   string `json:"hostname"`
+	LastSeen   time.Time
+	Active     bool
+	sessionkey string
+	Con        *websocket.Conn
 	// Command Command
 }
 
