@@ -16,6 +16,7 @@ type PendingBots struct {
 	Challenge  string
 	Agentid    string
 	RegsterKey string
+	PublicKey  []byte
 }
 
 type c2 struct {
