@@ -109,7 +109,7 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if msg.Type == "registerbot" {
+		if msg.Type == "session" {
 
 		}
 	}

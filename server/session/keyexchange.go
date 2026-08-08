@@ -14,6 +14,6 @@ func CalculateKeys() []byte {
 		return nil
 	}
 
-	return serverpriv.Bytes()
+	return serverpriv.PublicKey().Bytes()
 
 }
