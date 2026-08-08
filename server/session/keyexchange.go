@@ -22,7 +22,7 @@ func calculateSessionKey(pubkey []byte) []byte {
 	sessionkey, err := curve.NewPrivateKey(pubkey)
 	if err != nil {
 		log.Println("Error generating private key: ", err)
-		return
+		return nil
 	}
 	return sessionkey.Bytes()
 }
