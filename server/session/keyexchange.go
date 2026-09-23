@@ -6,15 +6,15 @@ import (
 	"log"
 )
 
-func CalculatePublicKey() []byte {
+func CalculatePublicKey() (privatekey []byte, publickey []byte) {
 	curve := ecdh.X25519()
 	serverpriv, err := curve.GenerateKey(rand.Reader)
 	if err != nil {
 		log.Println("Error generating key ", err)
-		return nil
+		return nil, nil
 	}
 
-	return serverpriv.PublicKey().Bytes()
+	return serverpriv.Bytes(), serverpriv.PublicKey().Bytes()
 
 }
 func calculateSessionKey(pubkey []byte) []byte {

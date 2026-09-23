@@ -112,7 +112,8 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 		if msg.Type == "session" {
 			pb.PublicKey = msg.Message.([]byte)
-			pub := session.CalculatePublicKey()
+			priv, pub := session.CalculatePublicKey()
+			pb.PrivatekeyServer = priv
 			wsjson.Write(ctx, con, pub)
 
 		}
