@@ -23,5 +23,3 @@ func GenerateBotCredentials() (models.BotCreds, error) {
 	}, nil
 
 }
-
-func CreateChallenge() string { return "" }
