@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func CalculatePublicKey() (privatekey ecdh.PrivateKey, publickey []byte) {
+func CalculatePublicKey() (privatekey *ecdh.PrivateKey, publickey []byte) {
 	curve := ecdh.X25519()
 	serverpriv, err := curve.GenerateKey(rand.Reader)
 	if err != nil {

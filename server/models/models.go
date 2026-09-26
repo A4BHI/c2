@@ -20,6 +20,7 @@ type Bot struct {
 	Active     bool
 	sessionkey string
 	Con        *websocket.Conn
+
 	// Command Command
 }
 

