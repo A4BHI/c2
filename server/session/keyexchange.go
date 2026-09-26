@@ -27,4 +27,11 @@ func CalculatePublicKey() (privatekey *ecdh.PrivateKey, publickey []byte) {
 //		}
 //		return sessionkey.Bytes()
 //	}
-func calculateSharedSecret()
+func calculateSharedSecret(serverprivkey *ecdh.PrivateKey, botpublickey *ecdh.PublicKey) []byte {
+
+	sharedsecret, err := serverprivkey.ECDH(botpublickey)
+	if err != nil {
+		log.Println("Error generating shared secret key: ", err)
+	}
+	return sharedsecret
+}
