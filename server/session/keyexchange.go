@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func CalculatePublicKey() (privatekey []byte, publickey []byte) {
+func CalculatePublicKey() (privatekey ecdh.PrivateKey, publickey []byte) {
 	curve := ecdh.X25519()
 	serverpriv, err := curve.GenerateKey(rand.Reader)
 	if err != nil {
@@ -14,7 +14,7 @@ func CalculatePublicKey() (privatekey []byte, publickey []byte) {
 		return nil, nil
 	}
 
-	return serverpriv.Bytes(), serverpriv.PublicKey().Bytes()
+	return serverpriv, serverpriv.PublicKey().Bytes()
 
 }
 func calculateSessionKey(pubkey []byte) []byte {
