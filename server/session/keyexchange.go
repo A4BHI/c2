@@ -17,12 +17,14 @@ func CalculatePublicKey() (privatekey *ecdh.PrivateKey, publickey []byte) {
 	return serverpriv, serverpriv.PublicKey().Bytes()
 
 }
-func calculateSessionKey(pubkey []byte) []byte {
-	curve := ecdh.X25519()
-	sessionkey, err := curve.NewPrivateKey(pubkey)
-	if err != nil {
-		log.Println("Error generating private key: ", err)
-		return nil
-	}
-	return sessionkey.Bytes()
-}
+
+//	func calculateSessionKey(pubkey []byte) []byte {
+//		curve := ecdh.X25519()
+//		sessionkey, err := curve.NewPrivateKey(pubkey)
+//		if err != nil {
+//			log.Println("Error generating private key: ", err)
+//			return nil
+//		}
+//		return sessionkey.Bytes()
+//	}
+func calculateSharedSecret()
